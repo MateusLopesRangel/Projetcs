@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>EITA-02 Powertrain | Mateus Rangel</title>
+  <meta name="description" content="Transmission design, lap-time simulation and track testing for the Formula ITA EITA-02 electric Formula SAE car.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap nav">
+      <a class="brand" href="index.html" data-nav>
+        <svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="9"/><circle cx="16" cy="16" r="3"/></g><g fill="currentColor"><rect x="14.5" y="2" width="3" height="5" rx="1"/><rect x="14.5" y="25" width="3" height="5" rx="1"/><rect x="2" y="14.5" width="5" height="3" rx="1"/><rect x="25" y="14.5" width="5" height="3" rx="1"/><rect x="14.5" y="2" width="3" height="5" rx="1" transform="rotate(45 16 16)"/><rect x="14.5" y="25" width="3" height="5" rx="1" transform="rotate(45 16 16)"/><rect x="2" y="14.5" width="5" height="3" rx="1" transform="rotate(45 16 16)"/><rect x="25" y="14.5" width="5" height="3" rx="1" transform="rotate(45 16 16)"/></g></svg>
+        <span>Mateus Rangel</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="index.html" data-nav>Home</a>
+        <a href="projects.html" data-nav>Projects</a>
+        <a href="about.html" data-nav>About</a>
+        <a href="contact.html" data-nav>Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap p-banner">
+      <p class="label">Project detail · Formula ITA</p>
+      <h1>EITA-02 Powertrain</h1>
+      <p class="lead">Formula ITA is the Formula SAE Electric team of the Aeronautics Institute of Technology (ITA). For the second car, EITA-02, I lead the powertrain work: choosing the transmission layout and the final drive ratio, sizing the parts, and building the software and test data needed to make those calls with numbers.</p>
+      <dl class="facts">
+        <div><dt>Role</dt><dd>Head of Powertrain</dd></div>
+        <div><dt>Car</dt><dd>EITA-02 (design), EITA-01 (testing)</dd></div>
+        <div><dt>Motor</dt><dd>WEG WTE300, single motor, RWD</dd></div>
+        <div><dt>Status</dt><dd>Paper draft, FEM pending</dd></div>
+      </dl>
+    </section>
+
+    <section class="wrap section" aria-labelledby="summary">
+      <div class="section-head">
+        <h2 id="summary">Summary</h2>
+        <p class="lead">I chose the EITA-02 transmission layout and final drive ratio with a MATLAB lap-time simulator I wrote and calibrated against track tests on the EITA-01. The result is a countershaft layout with two chain stages, a decision to keep the 12.25 ratio, a sized shaft, key and bearings, and a test program that showed which events gearing can and cannot help.</p>
+      </div>
+      <div class="meta">
+        <div>
+          <span class="label">Engineering problem</span>
+          <p>A single-motor electric car with no gearbox has one ratio for every event, and each event loads the motor differently. The first car also had belt misalignment and tensioner problems that the new design had to fix.</p>
+        </div>
+        <div>
+          <span class="label">Tools</span>
+          <p>MATLAB, 3DEXPERIENCE CATIA, OptimumLap, MATLAB Mobile (GPS and accelerometer), Shigley shaft design, Collins chain method, LaTeX</p>
+        </div>
+        <div>
+          <span class="label">Outcome</span>
+          <p>Countershaft with two chain stages chosen over a planetary reducer. Ratio kept at 12.25 after a multi-event sweep. Shaft sized at Ø26.8 mm. Lap model within 9.8% of a held-out real lap.</p>
+        </div>
+      </div>
+      <nav class="pillar-nav" aria-label="Project pillars">
+        <a href="#design"><span class="label">Design</span><strong>Transmission design</strong><span>Layout trade study, chain stages, countershaft sizing</span></a>
+        <a href="#simulation"><span class="label">Simulation</span><strong>Lap-time software</strong><span>Solver, event modules, final drive ratio decision</span></a>
+        <a href="#track"><span class="label">Track</span><strong>Testing on EITA-01</strong><span>Acceleration and Endurance tests, model validation</span></a>
+      </nav>
+    </section>
+
+    <!-- Pillar: Design -->
+    <section class="wrap pillar-section" id="design" aria-labelledby="design-h">
+      <div class="pillar-head">
+        <span class="label">Design</span>
+        <h2 id="design-h">Transmission design</h2>
+      </div>
+      <div class="two-col">
+        <div class="prose">
+          <p>EITA-01 used a belt from the motor to a countershaft and a chain to the differential. During manufacturing the belt went out of alignment and had to be replaced by a chain, and the tensioners on both stages were hard to adjust. For EITA-02 I compared two ways to deliver the ratio with the same WEG WTE300 motor.</p>
+          <p>A catalog planetary reducer followed by a single chain stage meant fewer parts to align. It also meant buying a reducer quoted at BRL 6,850 to 12,616 with no local supplier confirmed, designing a custom adapter flange balanced for 7,500 rpm, routing an output shaft across the car, and living with a ratio fixed by the catalog.</p>
+          <p>A countershaft with two chain stages needs only catalog chain, bearings and plates from suppliers the team already uses. It fits the packaging, and each stage can be adjusted on its own, so the ratio can still change later. The cost is bringing back the assembly risks we already know from EITA-01. I chose the countershaft, with chain on both stages for cost, ease of assembly and low tensioning needs.</p>
+        </div>
+        <figure class="diagram">
+          <div class="frame">
+            <svg viewBox="0 28 630 350" role="img" aria-label="Side schematic: motor pinion drives a countershaft sprocket through chain stage 1; a coaxial pinion on the countershaft drives the differential sprocket through chain stage 2.">
+              <rect x="4" y="210" width="256" height="160" rx="4" style="fill: color-mix(in srgb, var(--slow) 16%, var(--surface)); stroke: var(--slow); stroke-width: 1.5"/>
+              <rect x="367" y="194" width="257" height="160" rx="4" style="fill: color-mix(in srgb, var(--accent) 14%, var(--surface)); stroke: var(--accent); stroke-width: 1.5"/>
+              <g style="stroke: var(--ink); stroke-width: 2.4; fill: none; stroke-linecap: round">
+                <line x1="115" y1="278" x2="235" y2="97"/>
+                <line x1="141" y1="306" x2="325" y2="191"/>
+                <line x1="298" y1="117" x2="522" y2="212"/>
+                <line x1="275" y1="146" x2="447" y2="320"/>
+              </g>
+              <g style="stroke: var(--ink); stroke-width: 2; fill: color-mix(in srgb, var(--muted) 30%, var(--surface))">
+                <circle cx="131" cy="290" r="18.6"/>
+                <circle cx="290" cy="134" r="66.6"/>
+                <circle cx="495" cy="274" r="66.6"/>
+              </g>
+              <circle cx="290" cy="134" r="18.6" style="fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 5 4"/>
+              <g style="fill: var(--ink); font-family: var(--font-mono); font-size: 13px">
+                <text x="16" y="358">WEG WTE300 motor</text>
+                <text x="616" y="347" text-anchor="end">Differential</text>
+                <text x="290" y="54" text-anchor="middle">Countershaft: sprocket + coaxial pinion</text>
+              </g>
+              <g style="fill: var(--muted); font-family: var(--font-mono); font-size: 12px">
+                <text x="104" y="160" text-anchor="end">Stage 1 chain</text>
+                <text x="438" y="168">Stage 2 chain</text>
+              </g>
+            </svg>
+          </div>
+          <figcaption>EITA-02 layout. Stage 1 runs from the motor to the countershaft, stage 2 from a pinion on the same shaft to the differential. Redrawn from the diagram my MATLAB tool generates.</figcaption>
+        </figure>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><b class="num">12.25</b><span>Final drive ratio, kept from EITA-01</span></div>
+        <div class="stat"><b class="num">Ø26.8 mm</b><span>Minimum countershaft diameter, n = 2.5</span></div>
+        <div class="stat"><b class="num">101.4°</b><span>Angle between the two chain loads, measured in CAD</span></div>
+        <div class="stat"><b class="num">9.7×</b><span>Load capacity margin of the SKF 6006 bearings</span></div>
+      </div>
+
+      <figure>
+        <div class="frame"><img src="assets/img/eita02-rear-layout.png" alt="CATIA screenshot of the EITA-02 rear frame with the motor, differential sprocket and suspension points" width="1439" height="613" loading="lazy"></div>
+        <figcaption>Early packaging study of the EITA-02 rear end in 3DEXPERIENCE CATIA, before the countershaft layout was chosen.</figcaption>
+      </figure>
+
+      <div>
+        <details class="tech">
+          <summary>Countershaft sizing (Shigley, ASME elliptic criterion)</summary>
+          <div class="body">
+            <p>The countershaft carries the stage 1 sprocket at 61.5 mm and the stage 2 pinion at 192.5 mm from the reference bearing, with 290 mm between bearings. At design torque the chain forces are 282.8 N on the sprocket and 998.2 N on the pinion.</p>
+            <p>A first pass assumed both chains pull in one plane. The CAD coordinates showed 101.4° between the two load planes, which lowers the resultant bending moment from 70.44 N·m to 63.70 N·m.</p>
+            <div class="formula">d = { (16 n / π) · [ 4 (K<sub>f</sub> M<sub>a</sub> / S<sub>e</sub>)² + 3 (K<sub>fs</sub> T<sub>m</sub> / S<sub>y</sub>)² ]<sup>1/2</sup> }<sup>1/3</sup></div>
+            <p>With a profile-milled keyseat (K<sub>f</sub> = 2.14, K<sub>fs</sub> = 3.00), SAE 4140 annealed (S<sub>ut</sub> = 655 MPa, S<sub>y</sub> = 415 MPa) and n = 2.5, the minimum diameter is Ø26.80 mm. That is 1.2 mm under the Ø28 mm shaft that already ran on EITA-01.</p>
+            <ul>
+              <li>Key: 8 × 7 mm, DIN 6885, minimum length 4.41 mm, so the key is not the weak link.</li>
+              <li>Bearings: SKF 6006 (30 mm bore) on both sides to simplify assembly, about 9.7× capacity margin.</li>
+              <li>Hollow option checked: with d<sub>i</sub>/d<sub>o</sub> = 0.5 the outer diameter becomes Ø28.30 mm for about 22% less mass.</li>
+              <li>Still open before manufacturing: keyseat process, the actual steel and heat treatment, and bearing data checked against the manufacturer's catalog.</li>
+            </ul>
+          </div>
+        </details>
+        <details class="tech">
+          <summary>Chain stages and wrap angle</summary>
+          <div class="body">
+            <p>Chain selection follows the Collins method: design power from the motor's rated power and service factors, then the smallest ANSI chain that passes link-plate fatigue, roller and bushing fatigue, and contact wear. The software runs this search automatically.</p>
+            <p>With the centre distances locked in CAD (167.67 mm and 187.69 mm), stage 2 has a 124.9° wrap on the pinion, above the 120° practical minimum. Stage 1 sits at 117.6°, 2.4° short. Since the geometry cannot move, I accepted that margin. Harber (2005) ran 126° at a similar speed range.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Pillar: Simulation -->
+    <section class="wrap pillar-section" id="simulation" aria-labelledby="sim-h">
+      <div class="pillar-head">
+        <span class="label">Simulation</span>
+        <h2 id="sim-h">Lap-time software</h2>
+      </div>
+      <div class="prose">
+        <p>A first OptimumLap batch run put the best ratio near 13. OptimumLap could not represent details of our powertrain, such as the speed ramp the CVW300 inverter imposes after launch and the WTE300 torque curve from the datasheet table. So I wrote my own tool in MATLAB, <code>SoftwareTransmissao</code>. It simulates Endurance, Acceleration and SkidPad, converts times into event points, checks a ramp constraint, and sizes the chain stages, shaft, key and bearings for the chosen ratio.</p>
+      </div>
+
+      <figure>
+        <div class="frame"><div class="chart-box"><canvas data-speed-profile role="img" aria-label="Simulated speed versus distance on the Endurance lap, between 14 and 45 km/h"></canvas></div></div>
+        <figcaption>Simulated speed along the 802 m Endurance lap at FDR 12.25, lap time 126.8 s. Same speed colors as the track map on the home page.</figcaption>
+      </figure>
+
+      <div class="stats">
+        <div class="stat"><b class="num">2-pass</b><span>Forward and backward integration, anchored at the tightest corner</span></div>
+        <div class="stat"><b class="num">0.34</b><span>Median driver factor, calibrated on track GPS data</span></div>
+        <div class="stat"><b class="num">26</b><span>Automated test files, one suite per module</span></div>
+        <div class="stat"><b class="num">0.44%</b><span>Endurance gain from raising the ratio to 15.0</span></div>
+      </div>
+
+      <div>
+        <details class="tech">
+          <summary>Solver architecture</summary>
+          <div class="body">
+            <p>The track comes in as straight and constant-radius segments, the same format OptimumLap exports, and becomes a curvature profile along distance. The solver computes the cornering speed limit everywhere, anchors at the lowest one (the tightest corner, where the car must be at the limit), then integrates forward using the smaller of motor force and traction, and backward for braking.</p>
+            <p>The functions for lateral grip, traction with load transfer and braking are pure physical limits with no driver factor, so the Acceleration module and the top-speed check can reuse them.</p>
+            <p>Lateral and longitudinal grip share the tyre through a friction ellipse. At each point the lateral demand is set by speed and curvature, and the longitudinal force left is</p>
+            <div class="formula">factor = √( 1 − (F<sub>y,required</sub> / F<sub>y,max</sub>)² )</div>
+            <p>A median driver factor scales the lateral limit, because a normal lap is not driven at the tyre's limit. I calibrated it at the 95th percentile of lateral acceleration from the GPS of an Endurance test. Braking data from that session was left out: drivers had been told to brake gently to avoid current spikes in the motor.</p>
+          </div>
+        </details>
+        <details class="tech">
+          <summary>Event modules and constraints</summary>
+          <div class="body">
+            <ul>
+              <li>Acceleration: time-domain integration. Tractive force is the smallest of motor torque, tyre grip and the inverter speed ramp, minus aerodynamic drag.</li>
+              <li>SkidPad: point to point with a standing start, so the inverter ramp applies. With no field test yet, the driver factor is swept instead of fixed.</li>
+              <li>Points: the Acceleration (D.9.4) and SkidPad (D.10.4) rule formulas. The Endurance formula is not published, so I estimated it by calibrating against official 2025 results.</li>
+              <li>Ramp check: the lowest ratio that holds the car on a 6° slope at 5 m/s. The minimum is 10.58; 12.25 reaches 7.0°.</li>
+              <li>Mechanical sizing: chain (Collins), belt, countershaft, key and bearing selection from catalogs.</li>
+            </ul>
+            <p>Each module has its own test suite that checks physical behaviour in isolation, for example that the driver factor goes to its calibrated value on a straight and to zero at the cornering limit.</p>
+          </div>
+        </details>
+        <details class="tech">
+          <summary>Choosing the final drive ratio across events</summary>
+          <div class="body">
+            <p>For each event I swept the ratio with everything else fixed and looked at time and points.</p>
+          </div>
+          <div class="body" style="max-width: none">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Event or constraint</th><th>Sweep result</th><th>At current FDR 12.25</th><th>Decides the ratio?</th></tr></thead>
+                <tbody>
+                  <tr><td>Acceleration (D.9.4)</td><td class="n">Best 16.0: 10.696 s, 4.5 pts (floor)</td><td class="n">11.562 s, 4.5 pts</td><td>No</td></tr>
+                  <tr><td>SkidPad (D.10.4)</td><td class="n">Plateau 6.5 to 18.0: 6.060 s</td><td class="n">6.060 s, 42.67 pts</td><td>Weakly</td></tr>
+                  <tr class="hl"><td>Endurance (D.12.8)</td><td class="n">Best 15.0: 126.232 s; plateau 13.5 to 16.0</td><td class="n">126.784 s</td><td>Only on raw lap time</td></tr>
+                  <tr><td>Ramp, 6° at 5 m/s</td><td class="n">Minimum 10.58</td><td class="n">7.0°</td><td>No</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="body">
+            <p>Endurance alone points to 15.0, but the curve is flat: anything from 13.5 to 16.0 is within about 0.15% of the best time. Going from 12.25 to 15.0 gains 0.553 s per lap (0.44%) and needs sprockets about 10% larger on both stages, in packaging that is already tight. The gain is smaller than the model's own error on a real lap (9.8%), and no other event changes. I kept 12.25.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Pillar: Track -->
+    <section class="wrap pillar-section" id="track" aria-labelledby="track-h">
+      <div class="pillar-head">
+        <span class="label">Track</span>
+        <h2 id="track-h">Testing on EITA-01</h2>
+      </div>
+      <div class="prose">
+        <p>The software has free parameters, so it needed data from the real car before I could trust it. I wrote the test procedures and ran the tests with a smartphone logging GPS and accelerometer through MATLAB Mobile, plus two people timing by hand at start and finish. The manual times let me catch and discard bad sensor runs.</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><b class="num">80%</b><span>Drivetrain efficiency, calibrated from the Acceleration runs</span></div>
+        <div class="stat"><b class="num">≈6.8 s</b><span>Physical floor in Acceleration, against 5.739 s needed to score</span></div>
+        <div class="stat"><b class="num">F182</b><span>Inverter fault that stopped the full-distance Endurance test</span></div>
+        <div class="stat"><b class="num">9.8%</b><span>Model error on a held-out lap: 96.6 s simulated, 107.0 s measured</span></div>
+      </div>
+
+      <div>
+        <details class="tech">
+          <summary>Acceleration test (75 m)</summary>
+          <div class="body">
+            <p>Five timed runs, one of them with phone telemetry. While processing it I found a bug in my launch detection: a centred moving average used future samples, so the speed step leaked backwards and the launch was flagged one or two samples early. With raw speed for that decision only, the sensor time went from 12.42 s to 11.42 s, close to the 11.86 s from the stopwatch.</p>
+            <p>With a catalog drivetrain efficiency of about 90% the model gave 10.93 s, faster than the real car. At 80% it gave 11.56 s, inside the measured range and consistent with known chain slack, misalignment and bearings mounted on flexible plates.</p>
+            <p>With the calibrated model I swept the ratio from 2 to 20 and the car mass down to 60 kg (EITA-01 is about 370 kg with driver). No combination reaches 5.739 s, the time needed to score above the minimum. The floor is about 6.8 s because available traction drops with mass. That result took Acceleration out of the ratio decision and challenged the plan to chase weight for this event. As a cross-check I ran the same equations by hand for another team's four-motor AWD car.</p>
+          </div>
+        </details>
+        <details class="tech">
+          <summary>Endurance tests</summary>
+          <div class="body">
+            <p>First session: ten laps on a local track of 0.88 to 0.99 km. Two laps were planned stops (battery reading and driver change), leaving eight valid laps at an average of 111.98 s/km. The local track is straighter than the competition layout, so that pace is not comparable with official results.</p>
+            <p>Second session: a full-distance attempt, 22 laps with two drivers. The car stopped at the end of lap 6 or 7 with inverter fault F182 (output pulse feedback), and the battery voltage reading dropped from 78 V to 69 V. Cross-checking the CVW300 manual with the driver's report of losing power right after a sharp corner, the most likely cause is a loose connection between the battery and the inverter. In the points estimate, finishing Endurance is worth more than any pace gain, which is why reliability comes first in the ratio decision.</p>
+          </div>
+        </details>
+        <details class="tech">
+          <summary>Held-out validation of the lap solver</summary>
+          <div class="body">
+            <p>My first check compared the simulated lap on the competition-like layout with the pace on our local track and came out 52% off. That comparison mixed model error with two different tracks, so I discarded it.</p>
+            <p>I then rebuilt the local track geometry from the GPS of one lap, recalibrated the driver factor on the other seven laps (0.34), and simulated the reserved lap: 96.6 s against 107.0 s measured, 9.8% optimistic. Two likely causes remain open. The braking friction coefficient (0.8) has never been validated by a dedicated test, and 1 Hz GPS gives one point every 8 to 10 m in corners. This is one lap, one driver and one session, so it is a first check, not a statistical validation.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="wrap section" aria-labelledby="next">
+      <div class="section-head">
+        <h2 id="next">Next steps</h2>
+        <p class="lead">FEM of the differential mounts to close the paper, a dedicated SkidPad test to replace the estimated lateral grip, and a second held-out validation with a new test session.</p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn primary" href="contact.html" data-nav>Contact me</a>
+        <a class="btn ghost" href="projects.html" data-nav>All projects</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>Mateus Rangel · São José dos Campos, Brazil</span>
+      <span>More detail on the model and test data available on request.</span>
+    </div>
+  </footer>
+
+  <script src="js/site.js"></script>
+  <script src="js/track-data.js"></script>
+  <script src="js/track.js"></script>
+</body>
+</html>
